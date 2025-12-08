@@ -1,0 +1,33 @@
+-- Create KeyAccountLedger table
+CREATE TABLE IF NOT EXISTS key_account_ledger (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  key_account_id INT(11) NOT NULL,
+  vehicle_id INT(11) NULL,
+  station_id INT(11) NOT NULL,
+  transaction_date DATE NOT NULL,
+  transaction_type ENUM('SALE', 'PAYMENT', 'ADJUSTMENT') NOT NULL,
+  quantity DECIMAL(10,2) NULL DEFAULT 0,
+  unit_price DECIMAL(10,2) NULL DEFAULT 0,
+  total_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
+  debit DECIMAL(15,2) NOT NULL DEFAULT 0,
+  credit DECIMAL(15,2) NOT NULL DEFAULT 0,
+  balance DECIMAL(15,2) NOT NULL DEFAULT 0,
+  reference_number VARCHAR(255) NULL,
+  description TEXT NULL,
+  notes TEXT NULL,
+  created_by INT(11) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_key_account_id (key_account_id),
+  INDEX idx_vehicle_id (vehicle_id),
+  INDEX idx_station_id (station_id),
+  INDEX idx_transaction_date (transaction_date),
+  INDEX idx_transaction_type (transaction_type),
+  INDEX idx_created_at (created_at),
+  INDEX idx_created_by (created_by),
+  FOREIGN KEY (key_account_id) REFERENCES KeyAccounts(id) ON DELETE RESTRICT,
+  FOREIGN KEY (vehicle_id) REFERENCES Vehicles(id) ON DELETE SET NULL,
+  FOREIGN KEY (station_id) REFERENCES Stations(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

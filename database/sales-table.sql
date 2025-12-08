@@ -1,0 +1,30 @@
+-- Create Sales table
+CREATE TABLE IF NOT EXISTS sales (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  station_id INT(11) NOT NULL,
+  client_type ENUM('regular', 'key_account') NOT NULL,
+  key_account_id INT(11) NULL,
+  vehicle_id INT(11) NULL,
+  quantity DECIMAL(10,2) NOT NULL,
+  unit_price DECIMAL(10,2) NOT NULL,
+  total_amount DECIMAL(15,2) NOT NULL,
+  sale_date DATETIME NOT NULL,
+  reference_number VARCHAR(255) NULL,
+  notes TEXT NULL,
+  created_by INT(11) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_station_id (station_id),
+  INDEX idx_client_type (client_type),
+  INDEX idx_key_account_id (key_account_id),
+  INDEX idx_vehicle_id (vehicle_id),
+  INDEX idx_sale_date (sale_date),
+  INDEX idx_created_at (created_at),
+  INDEX idx_created_by (created_by),
+  INDEX idx_reference_number (reference_number),
+  FOREIGN KEY (station_id) REFERENCES Stations(id) ON DELETE RESTRICT,
+  FOREIGN KEY (key_account_id) REFERENCES KeyAccounts(id) ON DELETE SET NULL,
+  FOREIGN KEY (vehicle_id) REFERENCES Vehicles(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

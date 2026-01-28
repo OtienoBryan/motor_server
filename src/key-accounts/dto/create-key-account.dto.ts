@@ -28,5 +28,9 @@ export class CreateKeyAccountDto {
   @Max(1)
   @Type(() => Number)
   is_active?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  fuel_price?: number | null;
 }
 

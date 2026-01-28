@@ -1,4 +1,4 @@
-import { ClientType } from '../../entities/sale.entity';
+import { ClientType, PaymentMethod } from '../../entities/sale.entity';
 export declare class CreateSaleDto {
     stationId: number;
     clientType: ClientType;
@@ -7,6 +7,7 @@ export declare class CreateSaleDto {
     quantity: number;
     unitPrice: number;
     totalAmount: number;
+    paymentMethod?: PaymentMethod;
     saleDate: string;
     referenceNumber?: string;
     notes?: string;

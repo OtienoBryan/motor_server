@@ -5,6 +5,13 @@ export declare enum ClientType {
     REGULAR = "regular",
     KEY_ACCOUNT = "key_account"
 }
+export declare enum PaymentMethod {
+    CASH = "cash",
+    CARD = "card",
+    MOBILE_MONEY = "mobile_money",
+    CREDIT = "credit",
+    OTHER = "other"
+}
 export declare class Sale {
     id: number;
     stationId: number;
@@ -17,6 +24,7 @@ export declare class Sale {
     quantity: number;
     unitPrice: number;
     totalAmount: number;
+    paymentMethod?: PaymentMethod;
     saleDate: Date;
     referenceNumber?: string;
     notes?: string;

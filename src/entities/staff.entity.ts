@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Department } from './department.entity';
+import { Station } from './station.entity';
 
 @Entity('staff')
 export class Staff {
@@ -39,6 +40,13 @@ export class Staff {
   @ManyToOne(() => Department, department => department.staff)
   @JoinColumn({ name: 'department_id' })
   department_relation?: Department;
+
+  @Column({ name: 'station_id', type: 'int', nullable: true })
+  stationId: number;
+
+  @ManyToOne(() => Station)
+  @JoinColumn({ name: 'station_id' })
+  station?: Station;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   business_email: string;

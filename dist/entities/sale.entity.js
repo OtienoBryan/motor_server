@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sale = exports.ClientType = void 0;
+exports.Sale = exports.PaymentMethod = exports.ClientType = void 0;
 const typeorm_1 = require("typeorm");
 const station_entity_1 = require("./station.entity");
 const key_account_entity_1 = require("./key-account.entity");
@@ -19,6 +19,14 @@ var ClientType;
     ClientType["REGULAR"] = "regular";
     ClientType["KEY_ACCOUNT"] = "key_account";
 })(ClientType || (exports.ClientType = ClientType = {}));
+var PaymentMethod;
+(function (PaymentMethod) {
+    PaymentMethod["CASH"] = "cash";
+    PaymentMethod["CARD"] = "card";
+    PaymentMethod["MOBILE_MONEY"] = "mobile_money";
+    PaymentMethod["CREDIT"] = "credit";
+    PaymentMethod["OTHER"] = "other";
+})(PaymentMethod || (exports.PaymentMethod = PaymentMethod = {}));
 let Sale = class Sale {
     id;
     stationId;
@@ -31,6 +39,7 @@ let Sale = class Sale {
     quantity;
     unitPrice;
     totalAmount;
+    paymentMethod;
     saleDate;
     referenceNumber;
     notes;
@@ -90,6 +99,15 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'total_amount', type: 'decimal', precision: 15, scale: 2 }),
     __metadata("design:type", Number)
 ], Sale.prototype, "totalAmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'payment_method',
+        type: 'enum',
+        enum: PaymentMethod,
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], Sale.prototype, "paymentMethod", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'sale_date', type: 'datetime' }),
     __metadata("design:type", Date)

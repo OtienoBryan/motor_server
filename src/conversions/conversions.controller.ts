@@ -36,7 +36,22 @@ export class ConversionsController {
   @Get()
   async findAll(): Promise<Conversion[]> {
     console.log('🔧 [ConversionsController] GET /conversions');
-    return this.conversionsService.findAll();
+    try {
+      const result = await this.conversionsService.findAll();
+      console.log(`✅ [ConversionsController] Successfully retrieved ${result.length} conversions`);
+      return result;
+    } catch (error) {
+      console.error('❌ [ConversionsController] Error fetching conversions:', error);
+      console.error('❌ [ConversionsController] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error('❌ [ConversionsController] Error code:', (error as any)?.code);
+      console.error('❌ [ConversionsController] Error message:', error instanceof Error ? error.message : String(error));
+      
+      // Re-throw with more context
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch conversions: ${error.message}`);
+      }
+      throw error;
+    }
   }
 
   @Get(':id')

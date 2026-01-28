@@ -8,6 +8,14 @@ export enum ClientType {
   KEY_ACCOUNT = 'key_account',
 }
 
+export enum PaymentMethod {
+  CASH = 'cash',
+  CARD = 'card',
+  MOBILE_MONEY = 'mobile_money',
+  CREDIT = 'credit',
+  OTHER = 'other',
+}
+
 @Entity('sales')
 export class Sale {
   @PrimaryGeneratedColumn()
@@ -49,6 +57,14 @@ export class Sale {
 
   @Column({ name: 'total_amount', type: 'decimal', precision: 15, scale: 2 })
   totalAmount: number;
+
+  @Column({
+    name: 'payment_method',
+    type: 'enum',
+    enum: PaymentMethod,
+    nullable: true,
+  })
+  paymentMethod?: PaymentMethod;
 
   @Column({ name: 'sale_date', type: 'datetime' })
   saleDate: Date;

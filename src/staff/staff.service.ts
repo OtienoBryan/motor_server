@@ -25,6 +25,7 @@ export class StaffService {
 
   async findAll(): Promise<Staff[]> {
     return this.staffRepository.find({
+      relations: ['station'],
       order: {
         created_at: 'DESC'
       }
@@ -32,7 +33,10 @@ export class StaffService {
   }
 
   async findOne(id: number): Promise<Staff | null> {
-    return this.staffRepository.findOne({ where: { id } });
+    return this.staffRepository.findOne({ 
+      where: { id },
+      relations: ['station']
+    });
   }
 
   async create(createStaffDto: Partial<Staff>): Promise<Staff> {

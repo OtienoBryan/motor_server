@@ -10,5 +10,6 @@ export declare class AuthController {
         firstName: string;
         lastName: string;
         role: string;
+        department: string;
     }>;
 }

@@ -27,13 +27,17 @@ let StaffService = class StaffService {
     }
     async findAll() {
         return this.staffRepository.find({
+            relations: ['station'],
             order: {
                 created_at: 'DESC'
             }
         });
     }
     async findOne(id) {
-        return this.staffRepository.findOne({ where: { id } });
+        return this.staffRepository.findOne({
+            where: { id },
+            relations: ['station']
+        });
     }
     async create(createStaffDto) {
         const staff = this.staffRepository.create(createStaffDto);

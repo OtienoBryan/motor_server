@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Conversion = exports.Crew = exports.StoreInventory = exports.Store = exports.BookingPassenger = exports.Booking = exports.Passenger = exports.SeatReservation = exports.FlightSeries = exports.Destination = exports.Aircraft = exports.Category = exports.Product = exports.Vehicle = exports.KeyAccount = exports.FuelPrice = exports.Station = exports.Route = exports.Region = exports.SalesRep = exports.Country = exports.Notice = exports.ChatMessage = exports.ChatRoom = exports.LoginHistory = exports.Department = exports.Staff = void 0;
+exports.StaffLeave = exports.CheckinRecord = exports.LoyaltyPointsLedger = exports.Conversion = exports.Crew = exports.StoreInventory = exports.Store = exports.BookingPassenger = exports.Booking = exports.Passenger = exports.SeatReservation = exports.FlightSeries = exports.Destination = exports.Aircraft = exports.Category = exports.Product = exports.Vehicle = exports.KeyAccount = exports.FuelPrice = exports.Station = exports.Route = exports.Region = exports.SalesRep = exports.Country = exports.Notice = exports.ChatMessage = exports.ChatRoom = exports.LoginHistory = exports.Department = exports.Staff = void 0;
 var staff_entity_1 = require("./staff.entity");
 Object.defineProperty(exports, "Staff", { enumerable: true, get: function () { return staff_entity_1.Staff; } });
 var department_entity_1 = require("./department.entity");
@@ -55,4 +55,10 @@ var crew_entity_1 = require("./crew.entity");
 Object.defineProperty(exports, "Crew", { enumerable: true, get: function () { return crew_entity_1.Crew; } });
 var conversion_entity_1 = require("./conversion.entity");
 Object.defineProperty(exports, "Conversion", { enumerable: true, get: function () { return conversion_entity_1.Conversion; } });
+var loyalty_points_ledger_entity_1 = require("./loyalty-points-ledger.entity");
+Object.defineProperty(exports, "LoyaltyPointsLedger", { enumerable: true, get: function () { return loyalty_points_ledger_entity_1.LoyaltyPointsLedger; } });
+var checkin_record_entity_1 = require("./checkin-record.entity");
+Object.defineProperty(exports, "CheckinRecord", { enumerable: true, get: function () { return checkin_record_entity_1.CheckinRecord; } });
+var staff_leave_entity_1 = require("./staff-leave.entity");
+Object.defineProperty(exports, "StaffLeave", { enumerable: true, get: function () { return staff_leave_entity_1.StaffLeave; } });
 //# sourceMappingURL=index.js.map

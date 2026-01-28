@@ -21,6 +21,7 @@ class CreateSaleDto {
     quantity;
     unitPrice;
     totalAmount;
+    paymentMethod;
     saleDate;
     referenceNumber;
     notes;
@@ -68,6 +69,11 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateSaleDto.prototype, "totalAmount", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(sale_entity_1.PaymentMethod),
+    __metadata("design:type", String)
+], CreateSaleDto.prototype, "paymentMethod", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
     (0, class_validator_1.IsNotEmpty)(),

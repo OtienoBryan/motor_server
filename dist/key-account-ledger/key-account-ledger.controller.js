@@ -37,6 +37,14 @@ let KeyAccountLedgerController = class KeyAccountLedgerController {
             throw error;
         }
     }
+    async getAgingAnalysis() {
+        console.log('💰 [KeyAccountLedgerController] GET /key-account-ledger/aging-analysis');
+        return this.keyAccountLedgerService.getAgingAnalysis();
+    }
+    async findByKeyAccount(keyAccountId) {
+        console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/key-account/${keyAccountId}`);
+        return this.keyAccountLedgerService.findByKeyAccount(keyAccountId);
+    }
     async findAll(keyAccountId) {
         console.log('💰 [KeyAccountLedgerController] GET /key-account-ledger');
         const accountId = keyAccountId ? parseInt(keyAccountId, 10) : undefined;
@@ -45,10 +53,6 @@ let KeyAccountLedgerController = class KeyAccountLedgerController {
     async findOne(id) {
         console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/${id}`);
         return this.keyAccountLedgerService.findOne(id);
-    }
-    async findByKeyAccount(keyAccountId) {
-        console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/key-account/${keyAccountId}`);
-        return this.keyAccountLedgerService.findByKeyAccount(keyAccountId);
     }
 };
 exports.KeyAccountLedgerController = KeyAccountLedgerController;
@@ -59,6 +63,19 @@ __decorate([
     __metadata("design:paramtypes", [create_key_account_ledger_dto_1.CreateKeyAccountLedgerDto]),
     __metadata("design:returntype", Promise)
 ], KeyAccountLedgerController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('aging-analysis'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], KeyAccountLedgerController.prototype, "getAgingAnalysis", null);
+__decorate([
+    (0, common_1.Get)('key-account/:keyAccountId'),
+    __param(0, (0, common_1.Param)('keyAccountId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], KeyAccountLedgerController.prototype, "findByKeyAccount", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('keyAccountId')),
@@ -73,13 +90,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], KeyAccountLedgerController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Get)('key-account/:keyAccountId'),
-    __param(0, (0, common_1.Param)('keyAccountId', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], KeyAccountLedgerController.prototype, "findByKeyAccount", null);
 exports.KeyAccountLedgerController = KeyAccountLedgerController = __decorate([
     (0, common_1.Controller)('key-account-ledger'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

@@ -28,10 +28,15 @@ const stations_module_1 = require("./stations/stations.module");
 const fuel_prices_module_1 = require("./fuel-prices/fuel-prices.module");
 const key_accounts_module_1 = require("./key-accounts/key-accounts.module");
 const key_account_ledger_module_1 = require("./key-account-ledger/key-account-ledger.module");
+const key_account_fuel_prices_module_1 = require("./key-account-fuel-prices/key-account-fuel-prices.module");
+const loyalty_points_ledger_module_1 = require("./loyalty-points-ledger/loyalty-points-ledger.module");
 const vehicles_module_1 = require("./vehicles/vehicles.module");
 const inventory_module_1 = require("./inventory/inventory.module");
 const sales_module_1 = require("./sales/sales.module");
 const conversions_module_1 = require("./conversions/conversions.module");
+const login_history_module_1 = require("./login-history/login-history.module");
+const checkin_records_module_1 = require("./checkin-records/checkin-records.module");
+const leaves_module_1 = require("./leaves/leaves.module");
 const global_auth_guard_1 = require("./auth/global-auth.guard");
 let AppModule = class AppModule {
 };
@@ -67,10 +72,15 @@ exports.AppModule = AppModule = __decorate([
             fuel_prices_module_1.FuelPricesModule,
             key_accounts_module_1.KeyAccountsModule,
             key_account_ledger_module_1.KeyAccountLedgerModule,
+            key_account_fuel_prices_module_1.KeyAccountFuelPricesModule,
+            loyalty_points_ledger_module_1.LoyaltyPointsLedgerModule,
             vehicles_module_1.VehiclesModule,
             inventory_module_1.InventoryModule,
             sales_module_1.SalesModule,
             conversions_module_1.ConversionsModule,
+            login_history_module_1.LoginHistoryModule,
+            checkin_records_module_1.CheckinRecordsModule,
+            leaves_module_1.LeavesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

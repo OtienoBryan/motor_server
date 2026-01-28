@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Staff = void 0;
 const typeorm_1 = require("typeorm");
 const department_entity_1 = require("./department.entity");
+const station_entity_1 = require("./station.entity");
 let Staff = class Staff {
     id;
     name;
@@ -25,6 +26,8 @@ let Staff = class Staff {
     department;
     department_id;
     department_relation;
+    stationId;
+    station;
     business_email;
     department_email;
     salary;
@@ -86,6 +89,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'department_id' }),
     __metadata("design:type", department_entity_1.Department)
 ], Staff.prototype, "department_relation", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'station_id', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], Staff.prototype, "stationId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => station_entity_1.Station),
+    (0, typeorm_1.JoinColumn)({ name: 'station_id' }),
+    __metadata("design:type", station_entity_1.Station)
+], Staff.prototype, "station", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 255, nullable: true }),
     __metadata("design:type", String)

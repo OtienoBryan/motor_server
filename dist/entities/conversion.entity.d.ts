@@ -19,8 +19,10 @@ export declare class Conversion {
     currentFuelType: FuelType;
     logbookNumber?: string;
     scheduledDate?: Date;
-    status: 'pending' | 'approved' | 'declined';
+    status: 'pending' | 'approved' | 'declined' | 'completed';
     comment?: string;
+    conversionDescription?: string;
+    conversionDate?: Date;
     createdBy?: number;
     createdAt: Date;
     updatedAt: Date;

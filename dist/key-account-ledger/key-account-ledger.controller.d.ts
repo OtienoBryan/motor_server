@@ -5,7 +5,8 @@ export declare class KeyAccountLedgerController {
     private readonly keyAccountLedgerService;
     constructor(keyAccountLedgerService: KeyAccountLedgerService);
     create(createDto: CreateKeyAccountLedgerDto): Promise<KeyAccountLedger>;
+    getAgingAnalysis(): Promise<any[]>;
+    findByKeyAccount(keyAccountId: number): Promise<KeyAccountLedger[]>;
     findAll(keyAccountId?: string): Promise<KeyAccountLedger[]>;
     findOne(id: number): Promise<KeyAccountLedger>;
-    findByKeyAccount(keyAccountId: number): Promise<KeyAccountLedger[]>;
 }

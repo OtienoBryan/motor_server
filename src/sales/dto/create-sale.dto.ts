@@ -1,6 +1,6 @@
 import { IsNumber, IsNotEmpty, IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ClientType } from '../../entities/sale.entity';
+import { ClientType, PaymentMethod } from '../../entities/sale.entity';
 
 export class CreateSaleDto {
   @IsNumber()
@@ -36,6 +36,10 @@ export class CreateSaleDto {
   @Type(() => Number)
   @IsNotEmpty()
   totalAmount: number;
+
+  @IsOptional()
+  @IsEnum(PaymentMethod)
+  paymentMethod?: PaymentMethod;
 
   @IsDateString()
   @IsNotEmpty()

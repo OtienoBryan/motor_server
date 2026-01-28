@@ -34,12 +34,28 @@ export class ConversionsService {
   async findAll(): Promise<Conversion[]> {
     console.log('🔧 [ConversionsService] Finding all conversions');
     
-    const conversions = await this.conversionRepository.find({
-      order: { createdAt: 'DESC' },
-    });
-    
-    console.log(`✅ [ConversionsService] Found ${conversions.length} conversions`);
-    return conversions;
+    try {
+      const conversions = await this.conversionRepository.find({
+        order: { createdAt: 'DESC' },
+      });
+      
+      console.log(`✅ [ConversionsService] Found ${conversions.length} conversions`);
+      return conversions;
+    } catch (error) {
+      console.error('❌ [ConversionsService] Error finding conversions:', error);
+      console.error('❌ [ConversionsService] Error code:', (error as any)?.code);
+      console.error('❌ [ConversionsService] Error message:', error instanceof Error ? error.message : String(error));
+      console.error('❌ [ConversionsService] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      
+      // Handle specific connection errors
+      if ((error as any)?.code === 'ECONNRESET' || (error as any)?.code === 'PROTOCOL_CONNECTION_LOST') {
+        const connectionError = new Error('Database connection was lost. Please refresh and try again.');
+        (connectionError as any).code = (error as any)?.code;
+        throw connectionError;
+      }
+      
+      throw error;
+    }
   }
 
   async findOne(id: number): Promise<Conversion> {

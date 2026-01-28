@@ -61,13 +61,19 @@ export class Conversion {
   @Column({
     name: 'status',
     type: 'enum',
-    enum: ['pending', 'approved', 'declined'],
+    enum: ['pending', 'approved', 'declined', 'completed'],
     default: 'pending',
   })
-  status: 'pending' | 'approved' | 'declined';
+  status: 'pending' | 'approved' | 'declined' | 'completed';
 
   @Column({ type: 'text', nullable: true })
   comment?: string;
+
+  @Column({ name: 'conversion_description', type: 'text', nullable: true })
+  conversionDescription?: string;
+
+  @Column({ name: 'conversion_date', type: 'date', nullable: true })
+  conversionDate?: Date;
 
   @Column({ name: 'created_by', type: 'int', nullable: true })
   createdBy?: number;

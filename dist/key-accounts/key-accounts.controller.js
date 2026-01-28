@@ -15,17 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KeyAccountsController = void 0;
 const common_1 = require("@nestjs/common");
 const key_accounts_service_1 = require("./key-accounts.service");
+const key_account_ledger_service_1 = require("../key-account-ledger/key-account-ledger.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_key_account_dto_1 = require("./dto/create-key-account.dto");
 const update_key_account_dto_1 = require("./dto/update-key-account.dto");
 let KeyAccountsController = class KeyAccountsController {
     keyAccountsService;
-    constructor(keyAccountsService) {
+    keyAccountLedgerService;
+    constructor(keyAccountsService, keyAccountLedgerService) {
         this.keyAccountsService = keyAccountsService;
+        this.keyAccountLedgerService = keyAccountLedgerService;
     }
     async findAll() {
         console.log('🏢 [KeyAccountsController] GET /key-accounts');
         return this.keyAccountsService.findAll();
+    }
+    async getReceivablesAgingAnalysis() {
+        console.log('💰 [KeyAccountsController] GET /key-accounts/receivables/aging-analysis');
+        return this.keyAccountLedgerService.getAgingAnalysis();
+    }
+    async getPendingInvoices(id) {
+        console.log(`💰 [KeyAccountsController] GET /key-accounts/${id}/pending-invoices`);
+        return this.keyAccountLedgerService.getPendingInvoices(id);
     }
     async findOne(id) {
         console.log(`🏢 [KeyAccountsController] GET /key-accounts/${id}`);
@@ -44,10 +55,10 @@ let KeyAccountsController = class KeyAccountsController {
             throw error;
         }
     }
-    async update(id, updateKeyAccountDto) {
+    async update(id, updateKeyAccountDto, req) {
         console.log(`🏢 [KeyAccountsController] PUT /key-accounts/${id}`);
         console.log('🏢 [KeyAccountsController] Update key account data:', updateKeyAccountDto);
-        return this.keyAccountsService.update(id, updateKeyAccountDto);
+        return this.keyAccountsService.update(id, updateKeyAccountDto, req.user?.sub);
     }
     async remove(id) {
         console.log(`🏢 [KeyAccountsController] DELETE /key-accounts/${id}`);
@@ -62,6 +73,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], KeyAccountsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('receivables/aging-analysis'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], KeyAccountsController.prototype, "getReceivablesAgingAnalysis", null);
+__decorate([
+    (0, common_1.Get)(':id/pending-invoices'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], KeyAccountsController.prototype, "getPendingInvoices", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
@@ -80,8 +104,9 @@ __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_key_account_dto_1.UpdateKeyAccountDto]),
+    __metadata("design:paramtypes", [Number, update_key_account_dto_1.UpdateKeyAccountDto, Object]),
     __metadata("design:returntype", Promise)
 ], KeyAccountsController.prototype, "update", null);
 __decorate([
@@ -94,6 +119,7 @@ __decorate([
 exports.KeyAccountsController = KeyAccountsController = __decorate([
     (0, common_1.Controller)('key-accounts'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [key_accounts_service_1.KeyAccountsService])
+    __metadata("design:paramtypes", [key_accounts_service_1.KeyAccountsService,
+        key_account_ledger_service_1.KeyAccountLedgerService])
 ], KeyAccountsController);
 //# sourceMappingURL=key-accounts.controller.js.map

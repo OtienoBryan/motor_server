@@ -35,6 +35,8 @@ let Conversion = class Conversion {
     scheduledDate;
     status;
     comment;
+    conversionDescription;
+    conversionDate;
     createdBy;
     createdAt;
     updatedAt;
@@ -109,7 +111,7 @@ __decorate([
     (0, typeorm_1.Column)({
         name: 'status',
         type: 'enum',
-        enum: ['pending', 'approved', 'declined'],
+        enum: ['pending', 'approved', 'declined', 'completed'],
         default: 'pending',
     }),
     __metadata("design:type", String)
@@ -118,6 +120,14 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], Conversion.prototype, "comment", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'conversion_description', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Conversion.prototype, "conversionDescription", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'conversion_date', type: 'date', nullable: true }),
+    __metadata("design:type", Date)
+], Conversion.prototype, "conversionDate", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'created_by', type: 'int', nullable: true }),
     __metadata("design:type", Number)

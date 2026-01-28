@@ -137,6 +137,7 @@ let AuthService = class AuthService {
                     firstName: staff.name.split(' ')[0] || staff.name,
                     lastName: staff.name.split(' ').slice(1).join(' ') || '',
                     role: staff.role,
+                    department: staff.department || '',
                 },
             };
         }

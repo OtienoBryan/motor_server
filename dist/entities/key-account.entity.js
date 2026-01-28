@@ -19,6 +19,9 @@ let KeyAccount = class KeyAccount {
     account_number;
     description;
     is_active;
+    loyaltyPoints;
+    balance;
+    fuel_price;
     created_at;
     updated_at;
 };
@@ -51,6 +54,18 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'int', default: 1 }),
     __metadata("design:type", Number)
 ], KeyAccount.prototype, "is_active", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'loyalty_points', type: 'decimal', precision: 15, scale: 2, default: 0 }),
+    __metadata("design:type", Number)
+], KeyAccount.prototype, "loyaltyPoints", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 15, scale: 2, default: 0 }),
+    __metadata("design:type", Number)
+], KeyAccount.prototype, "balance", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Object)
+], KeyAccount.prototype, "fuel_price", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)

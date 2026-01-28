@@ -23,6 +23,15 @@ export class KeyAccount {
   @Column({ type: 'int', default: 1 })
   is_active: number;
 
+  @Column({ name: 'loyalty_points', type: 'decimal', precision: 15, scale: 2, default: 0 })
+  loyaltyPoints: number;
+
+  @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
+  balance: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  fuel_price: number | null;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

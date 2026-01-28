@@ -34,6 +34,18 @@ export class KeyAccountLedgerController {
     }
   }
 
+  @Get('aging-analysis')
+  async getAgingAnalysis(): Promise<any[]> {
+    console.log('💰 [KeyAccountLedgerController] GET /key-account-ledger/aging-analysis');
+    return this.keyAccountLedgerService.getAgingAnalysis();
+  }
+
+  @Get('key-account/:keyAccountId')
+  async findByKeyAccount(@Param('keyAccountId', ParseIntPipe) keyAccountId: number): Promise<KeyAccountLedger[]> {
+    console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/key-account/${keyAccountId}`);
+    return this.keyAccountLedgerService.findByKeyAccount(keyAccountId);
+  }
+
   @Get()
   async findAll(@Query('keyAccountId') keyAccountId?: string): Promise<KeyAccountLedger[]> {
     console.log('💰 [KeyAccountLedgerController] GET /key-account-ledger');
@@ -45,12 +57,6 @@ export class KeyAccountLedgerController {
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<KeyAccountLedger> {
     console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/${id}`);
     return this.keyAccountLedgerService.findOne(id);
-  }
-
-  @Get('key-account/:keyAccountId')
-  async findByKeyAccount(@Param('keyAccountId', ParseIntPipe) keyAccountId: number): Promise<KeyAccountLedger[]> {
-    console.log(`💰 [KeyAccountLedgerController] GET /key-account-ledger/key-account/${keyAccountId}`);
-    return this.keyAccountLedgerService.findByKeyAccount(keyAccountId);
   }
 }
 

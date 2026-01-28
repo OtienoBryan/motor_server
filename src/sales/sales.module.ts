@@ -6,10 +6,11 @@ import { Sale } from '../entities/sale.entity';
 import { Station } from '../entities/station.entity';
 import { KeyAccount } from '../entities/key-account.entity';
 import { Vehicle } from '../entities/vehicle.entity';
+import { LoyaltyPointsLedger } from '../entities/loyalty-points-ledger.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Sale, Station, KeyAccount, Vehicle]),
+    TypeOrmModule.forFeature([Sale, Station, KeyAccount, Vehicle, LoyaltyPointsLedger]),
   ],
   controllers: [SalesController],
   providers: [SalesService],

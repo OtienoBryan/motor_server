@@ -25,3 +25,6 @@ export { Store } from './store.entity';
 export { StoreInventory } from './store-inventory.entity';
 export { Crew } from './crew.entity';
 export { Conversion } from './conversion.entity';
+export { LoyaltyPointsLedger } from './loyalty-points-ledger.entity';
+export { CheckinRecord } from './checkin-record.entity';
+export { StaffLeave } from './staff-leave.entity';

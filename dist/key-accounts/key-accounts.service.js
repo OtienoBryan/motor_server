@@ -17,10 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const key_account_entity_1 = require("../entities/key-account.entity");
+const key_account_fuel_prices_service_1 = require("../key-account-fuel-prices/key-account-fuel-prices.service");
 let KeyAccountsService = class KeyAccountsService {
     keyAccountRepository;
-    constructor(keyAccountRepository) {
+    keyAccountFuelPricesService;
+    constructor(keyAccountRepository, keyAccountFuelPricesService) {
         this.keyAccountRepository = keyAccountRepository;
+        this.keyAccountFuelPricesService = keyAccountFuelPricesService;
     }
     async findAll() {
         console.log('🏢 [KeyAccountsService] Finding all key accounts');
@@ -59,9 +62,23 @@ let KeyAccountsService = class KeyAccountsService {
                 account_number: createKeyAccountDto.account_number,
                 description: createKeyAccountDto.description || null,
                 is_active: createKeyAccountDto.is_active !== undefined ? createKeyAccountDto.is_active : 1,
+                fuel_price: createKeyAccountDto.fuel_price !== undefined ? createKeyAccountDto.fuel_price : null,
             });
             const savedKeyAccount = await this.keyAccountRepository.save(keyAccount);
             console.log(`✅ [KeyAccountsService] Key account created with ID: ${savedKeyAccount.id}`);
+            if (createKeyAccountDto.fuel_price !== undefined && createKeyAccountDto.fuel_price !== null) {
+                try {
+                    await this.keyAccountFuelPricesService.create({
+                        keyAccountId: savedKeyAccount.id,
+                        price: createKeyAccountDto.fuel_price,
+                        notes: 'Initial fuel price',
+                        updatedBy: null
+                    });
+                }
+                catch (error) {
+                    console.error('⚠️ [KeyAccountsService] Failed to create fuel price history entry:', error);
+                }
+            }
             return savedKeyAccount;
         }
         catch (error) {
@@ -69,7 +86,7 @@ let KeyAccountsService = class KeyAccountsService {
             throw error;
         }
     }
-    async update(id, updateKeyAccountDto) {
+    async update(id, updateKeyAccountDto, staffId) {
         console.log(`🏢 [KeyAccountsService] Updating key account with ID: ${id}`);
         console.log('🏢 [KeyAccountsService] Update data:', JSON.stringify(updateKeyAccountDto, null, 2));
         const keyAccount = await this.keyAccountRepository.findOne({ where: { id } });
@@ -84,9 +101,29 @@ let KeyAccountsService = class KeyAccountsService {
                 throw new Error(`Account number ${updateKeyAccountDto.account_number} already exists`);
             }
         }
+        const fuelPriceChanged = updateKeyAccountDto.fuel_price !== undefined &&
+            updateKeyAccountDto.fuel_price !== keyAccount.fuel_price;
+        const oldFuelPrice = keyAccount.fuel_price;
         Object.assign(keyAccount, updateKeyAccountDto);
         const updatedKeyAccount = await this.keyAccountRepository.save(keyAccount);
         console.log(`✅ [KeyAccountsService] Key account updated: ${updatedKeyAccount.name}`);
+        if (fuelPriceChanged) {
+            try {
+                const newPrice = updateKeyAccountDto.fuel_price;
+                if (newPrice !== null && newPrice !== undefined) {
+                    await this.keyAccountFuelPricesService.create({
+                        keyAccountId: updatedKeyAccount.id,
+                        price: newPrice,
+                        notes: oldFuelPrice !== null ? `Updated from ${oldFuelPrice} to ${newPrice}` : 'Fuel price set',
+                        updatedBy: staffId || null
+                    });
+                    console.log(`✅ [KeyAccountsService] Created fuel price history entry for key account ${updatedKeyAccount.id} by staff ${staffId}`);
+                }
+            }
+            catch (error) {
+                console.error('⚠️ [KeyAccountsService] Failed to create fuel price history entry:', error);
+            }
+        }
         return updatedKeyAccount;
     }
     async remove(id) {
@@ -103,6 +140,8 @@ exports.KeyAccountsService = KeyAccountsService;
 exports.KeyAccountsService = KeyAccountsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(key_account_entity_1.KeyAccount)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => key_account_fuel_prices_service_1.KeyAccountFuelPricesService))),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        key_account_fuel_prices_service_1.KeyAccountFuelPricesService])
 ], KeyAccountsService);
 //# sourceMappingURL=key-accounts.service.js.map

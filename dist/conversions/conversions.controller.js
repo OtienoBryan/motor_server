@@ -38,7 +38,21 @@ let ConversionsController = class ConversionsController {
     }
     async findAll() {
         console.log('🔧 [ConversionsController] GET /conversions');
-        return this.conversionsService.findAll();
+        try {
+            const result = await this.conversionsService.findAll();
+            console.log(`✅ [ConversionsController] Successfully retrieved ${result.length} conversions`);
+            return result;
+        }
+        catch (error) {
+            console.error('❌ [ConversionsController] Error fetching conversions:', error);
+            console.error('❌ [ConversionsController] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+            console.error('❌ [ConversionsController] Error code:', error?.code);
+            console.error('❌ [ConversionsController] Error message:', error instanceof Error ? error.message : String(error));
+            if (error instanceof Error) {
+                throw new Error(`Failed to fetch conversions: ${error.message}`);
+            }
+            throw error;
+        }
     }
     async findOne(id) {
         console.log(`🔧 [ConversionsController] GET /conversions/${id}`);

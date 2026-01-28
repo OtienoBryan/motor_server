@@ -7,9 +7,11 @@ import {
   Body, 
   Param, 
   ParseIntPipe,
-  UseGuards 
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import { KeyAccountsService } from './key-accounts.service';
+import { KeyAccountLedgerService } from '../key-account-ledger/key-account-ledger.service';
 import { KeyAccount } from '../entities/key-account.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateKeyAccountDto } from './dto/create-key-account.dto';
@@ -18,12 +20,27 @@ import { UpdateKeyAccountDto } from './dto/update-key-account.dto';
 @Controller('key-accounts')
 @UseGuards(JwtAuthGuard)
 export class KeyAccountsController {
-  constructor(private readonly keyAccountsService: KeyAccountsService) {}
+  constructor(
+    private readonly keyAccountsService: KeyAccountsService,
+    private readonly keyAccountLedgerService: KeyAccountLedgerService
+  ) {}
 
   @Get()
   async findAll(): Promise<KeyAccount[]> {
     console.log('🏢 [KeyAccountsController] GET /key-accounts');
     return this.keyAccountsService.findAll();
+  }
+
+  @Get('receivables/aging-analysis')
+  async getReceivablesAgingAnalysis(): Promise<any[]> {
+    console.log('💰 [KeyAccountsController] GET /key-accounts/receivables/aging-analysis');
+    return this.keyAccountLedgerService.getAgingAnalysis();
+  }
+
+  @Get(':id/pending-invoices')
+  async getPendingInvoices(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
+    console.log(`💰 [KeyAccountsController] GET /key-accounts/${id}/pending-invoices`);
+    return this.keyAccountLedgerService.getPendingInvoices(id);
   }
 
   @Get(':id')
@@ -49,11 +66,12 @@ export class KeyAccountsController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateKeyAccountDto: UpdateKeyAccountDto
+    @Body() updateKeyAccountDto: UpdateKeyAccountDto,
+    @Request() req
   ): Promise<KeyAccount> {
     console.log(`🏢 [KeyAccountsController] PUT /key-accounts/${id}`);
     console.log('🏢 [KeyAccountsController] Update key account data:', updateKeyAccountDto);
-    return this.keyAccountsService.update(id, updateKeyAccountDto);
+    return this.keyAccountsService.update(id, updateKeyAccountDto, req.user?.sub);
   }
 
   @Delete(':id')

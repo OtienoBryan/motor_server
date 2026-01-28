@@ -12,12 +12,18 @@ const typeorm_1 = require("@nestjs/typeorm");
 const key_accounts_service_1 = require("./key-accounts.service");
 const key_accounts_controller_1 = require("./key-accounts.controller");
 const key_account_entity_1 = require("../entities/key-account.entity");
+const key_account_ledger_module_1 = require("../key-account-ledger/key-account-ledger.module");
+const key_account_fuel_prices_module_1 = require("../key-account-fuel-prices/key-account-fuel-prices.module");
 let KeyAccountsModule = class KeyAccountsModule {
 };
 exports.KeyAccountsModule = KeyAccountsModule;
 exports.KeyAccountsModule = KeyAccountsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([key_account_entity_1.KeyAccount])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([key_account_entity_1.KeyAccount]),
+            key_account_ledger_module_1.KeyAccountLedgerModule,
+            (0, common_1.forwardRef)(() => key_account_fuel_prices_module_1.KeyAccountFuelPricesModule)
+        ],
         controllers: [key_accounts_controller_1.KeyAccountsController],
         providers: [key_accounts_service_1.KeyAccountsService],
         exports: [key_accounts_service_1.KeyAccountsService],

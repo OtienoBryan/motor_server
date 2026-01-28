@@ -19,10 +19,15 @@ import { StationsModule } from './stations/stations.module';
 import { FuelPricesModule } from './fuel-prices/fuel-prices.module';
 import { KeyAccountsModule } from './key-accounts/key-accounts.module';
 import { KeyAccountLedgerModule } from './key-account-ledger/key-account-ledger.module';
+import { KeyAccountFuelPricesModule } from './key-account-fuel-prices/key-account-fuel-prices.module';
+import { LoyaltyPointsLedgerModule } from './loyalty-points-ledger/loyalty-points-ledger.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { SalesModule } from './sales/sales.module';
 import { ConversionsModule } from './conversions/conversions.module';
+import { LoginHistoryModule } from './login-history/login-history.module';
+import { CheckinRecordsModule } from './checkin-records/checkin-records.module';
+import { LeavesModule } from './leaves/leaves.module';
 import { GlobalAuthGuard } from './auth/global-auth.guard';
 
 @Module({
@@ -55,10 +60,15 @@ import { GlobalAuthGuard } from './auth/global-auth.guard';
     FuelPricesModule,
     KeyAccountsModule,
     KeyAccountLedgerModule,
+    KeyAccountFuelPricesModule,
+    LoyaltyPointsLedgerModule,
     VehiclesModule,
     InventoryModule,
     SalesModule,
     ConversionsModule,
+    LoginHistoryModule,
+    CheckinRecordsModule,
+    LeavesModule,
   ],
   controllers: [AppController],
   providers: [

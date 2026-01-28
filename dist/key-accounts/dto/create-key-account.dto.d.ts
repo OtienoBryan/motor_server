@@ -5,4 +5,5 @@ export declare class CreateKeyAccountDto {
     account_number: string;
     description?: string;
     is_active?: number;
+    fuel_price?: number | null;
 }

@@ -1,4 +1,5 @@
 import { Department } from './department.entity';
+import { Station } from './station.entity';
 export declare class Staff {
     id: number;
     name: string;
@@ -12,6 +13,8 @@ export declare class Staff {
     department: string;
     department_id: number;
     department_relation?: Department;
+    stationId: number;
+    station?: Station;
     business_email: string;
     department_email: string;
     salary: number;

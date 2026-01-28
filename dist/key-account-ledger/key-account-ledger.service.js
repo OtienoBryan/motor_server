@@ -41,7 +41,7 @@ let KeyAccountLedgerService = class KeyAccountLedgerService {
         try {
             const previousEntry = await queryRunner.manager.findOne(key_account_ledger_entity_1.KeyAccountLedger, {
                 where: { keyAccountId: createDto.keyAccountId },
-                order: { createdAt: 'DESC' }
+                order: { id: 'DESC' }
             });
             const previousBalance = previousEntry ? Number(previousEntry.balance) : 0;
             let debit = 0;
@@ -92,6 +92,10 @@ let KeyAccountLedgerService = class KeyAccountLedgerService {
             const ledgerEntry = this.keyAccountLedgerRepository.create(ledgerData);
             console.log('💰 [KeyAccountLedgerService] Saving ledger entry:', JSON.stringify(ledgerEntry, null, 2));
             const savedLedger = await queryRunner.manager.save(key_account_ledger_entity_1.KeyAccountLedger, ledgerEntry);
+            await queryRunner.manager.update(key_account_entity_1.KeyAccount, createDto.keyAccountId, {
+                balance: newBalance
+            });
+            console.log(`💰 [KeyAccountLedgerService] Updated key account balance to: ${newBalance}`);
             await queryRunner.commitTransaction();
             console.log(`✅ [KeyAccountLedgerService] Key account ledger entry created with ID: ${savedLedger.id}`);
             const ledgerWithRelations = await this.keyAccountLedgerRepository.findOne({
@@ -118,7 +122,9 @@ let KeyAccountLedgerService = class KeyAccountLedgerService {
         const entries = await this.keyAccountLedgerRepository.find({
             where,
             relations: ['keyAccount', 'vehicle', 'station'],
-            order: { createdAt: 'DESC' },
+            order: {
+                id: 'DESC'
+            },
         });
         console.log(`✅ [KeyAccountLedgerService] Found ${entries.length} ledger entries`);
         return entries;
@@ -141,10 +147,107 @@ let KeyAccountLedgerService = class KeyAccountLedgerService {
         const entries = await this.keyAccountLedgerRepository.find({
             where: { keyAccountId },
             relations: ['keyAccount', 'vehicle', 'station'],
-            order: { createdAt: 'DESC' },
+            order: {
+                id: 'DESC'
+            },
         });
         console.log(`✅ [KeyAccountLedgerService] Found ${entries.length} entries for key account ${keyAccountId}`);
         return entries;
+    }
+    async getPendingInvoices(keyAccountId) {
+        console.log(`💰 [KeyAccountLedgerService] Finding pending invoices for key account: ${keyAccountId}`);
+        const invoices = await this.keyAccountLedgerRepository.find({
+            where: {
+                keyAccountId,
+                transactionType: key_account_ledger_entity_1.KeyAccountTransactionType.SALE
+            },
+            relations: ['keyAccount', 'vehicle', 'station'],
+            order: {
+                transactionDate: 'DESC',
+                id: 'DESC'
+            },
+        });
+        console.log(`✅ [KeyAccountLedgerService] Found ${invoices.length} invoices for key account ${keyAccountId}`);
+        return invoices;
+    }
+    async getAgingAnalysis() {
+        console.log('💰 [KeyAccountLedgerService] Calculating aging analysis');
+        const keyAccounts = await this.keyAccountRepository.find({
+            where: {},
+            order: { name: 'ASC' }
+        });
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const agingData = [];
+        for (const account of keyAccounts) {
+            const balance = Number(account.balance || 0);
+            if (balance <= 0)
+                continue;
+            const oldestSale = await this.keyAccountLedgerRepository.findOne({
+                where: {
+                    keyAccountId: account.id,
+                    transactionType: key_account_ledger_entity_1.KeyAccountTransactionType.SALE
+                },
+                order: {
+                    transactionDate: 'ASC',
+                    id: 'ASC'
+                }
+            });
+            let daysAged = 0;
+            let oldestTransactionDate = null;
+            if (oldestSale) {
+                oldestTransactionDate = new Date(oldestSale.transactionDate);
+                const diffTime = today.getTime() - oldestTransactionDate.getTime();
+                daysAged = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            }
+            else {
+                const oldestTransaction = await this.keyAccountLedgerRepository.findOne({
+                    where: { keyAccountId: account.id },
+                    order: {
+                        transactionDate: 'ASC',
+                        id: 'ASC'
+                    }
+                });
+                if (oldestTransaction) {
+                    oldestTransactionDate = new Date(oldestTransaction.transactionDate);
+                    const diffTime = today.getTime() - oldestTransactionDate.getTime();
+                    daysAged = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                }
+            }
+            let agingBucket = 'Current';
+            if (daysAged > 120) {
+                agingBucket = 'Over 120 Days';
+            }
+            else if (daysAged > 90) {
+                agingBucket = '91-120 Days';
+            }
+            else if (daysAged > 60) {
+                agingBucket = '61-90 Days';
+            }
+            else if (daysAged > 30) {
+                agingBucket = '31-60 Days';
+            }
+            else {
+                agingBucket = 'Current';
+            }
+            agingData.push({
+                keyAccountId: account.id,
+                keyAccountName: account.name,
+                accountNumber: account.account_number,
+                email: account.email,
+                balance: balance,
+                daysAged: daysAged,
+                oldestTransactionDate: oldestTransactionDate ? oldestTransactionDate.toISOString().split('T')[0] : null,
+                agingBucket: agingBucket,
+                current: daysAged <= 30 ? balance : 0,
+                days31to60: daysAged > 30 && daysAged <= 60 ? balance : 0,
+                days61to90: daysAged > 60 && daysAged <= 90 ? balance : 0,
+                days91to120: daysAged > 90 && daysAged <= 120 ? balance : 0,
+                over120: daysAged > 120 ? balance : 0,
+            });
+        }
+        console.log(`✅ [KeyAccountLedgerService] Aging analysis calculated for ${agingData.length} accounts`);
+        return agingData;
     }
 };
 exports.KeyAccountLedgerService = KeyAccountLedgerService;

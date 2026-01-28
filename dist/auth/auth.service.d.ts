@@ -10,6 +10,7 @@ export interface AuthResponse {
         firstName: string;
         lastName: string;
         role: string;
+        department: string;
     };
 }
 export declare class AuthService {

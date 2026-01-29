@@ -24,7 +24,21 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(loginDto) {
-        return this.authService.login(loginDto);
+        try {
+            console.log('🔐 [AuthController] Login request received:', { email: loginDto.email });
+            const result = await this.authService.login(loginDto);
+            console.log('✅ [AuthController] Login successful');
+            return result;
+        }
+        catch (error) {
+            console.error('❌ [AuthController] Login error:', error);
+            console.error('❌ [AuthController] Error details:', {
+                message: error instanceof Error ? error.message : String(error),
+                name: error instanceof Error ? error.name : typeof error,
+                stack: error instanceof Error ? error.stack : 'No stack',
+            });
+            throw error;
+        }
     }
     async getProfile(req) {
         const staff = await this.authService.getStaffById(req.user.sub);

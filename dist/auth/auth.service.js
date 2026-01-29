@@ -85,8 +85,26 @@ let AuthService = class AuthService {
                 console.log('❌ [AuthService] Staff is not active');
                 return null;
             }
-            const isPasswordValid = await bcrypt.compare(password, staff.password);
-            console.log('🔐 [AuthService] Password validation result:', isPasswordValid);
+            if (!staff.password) {
+                console.error('❌ [AuthService] Staff password is null or empty');
+                return null;
+            }
+            let isPasswordValid = false;
+            try {
+                if (staff.password.startsWith('$2')) {
+                    isPasswordValid = await bcrypt.compare(password, staff.password);
+                }
+                else {
+                    console.warn('⚠️ [AuthService] Password is not hashed, comparing directly');
+                    isPasswordValid = password === staff.password;
+                }
+                console.log('🔐 [AuthService] Password validation result:', isPasswordValid);
+            }
+            catch (bcryptError) {
+                console.error('❌ [AuthService] Bcrypt comparison error:', bcryptError);
+                console.error('❌ [AuthService] Password hash format:', staff.password?.substring(0, 10));
+                return null;
+            }
             if (!isPasswordValid) {
                 console.log('❌ [AuthService] Invalid password');
                 return null;
@@ -97,13 +115,16 @@ let AuthService = class AuthService {
         catch (error) {
             console.error('❌ [AuthService] Database error during validation:', error);
             if (error.code === 'ECONNREFUSED') {
-                throw new Error('Database connection failed. Please try again later.');
+                console.error('❌ [AuthService] Database connection refused');
+                throw new common_1.InternalServerErrorException('Database connection failed. Please try again later.');
             }
             else if (error.code === 'ETIMEDOUT') {
-                throw new Error('Database request timeout. Please try again.');
+                console.error('❌ [AuthService] Database request timeout');
+                throw new common_1.InternalServerErrorException('Database request timeout. Please try again.');
             }
             else {
-                throw new Error('Authentication service temporarily unavailable');
+                console.error('❌ [AuthService] Unknown database error:', error);
+                throw new common_1.InternalServerErrorException('Authentication service temporarily unavailable');
             }
         }
     }
@@ -143,13 +164,23 @@ let AuthService = class AuthService {
         }
         catch (error) {
             console.error('❌ [AuthService] Login error:', error);
-            if (error instanceof common_1.UnauthorizedException) {
+            console.error('❌ [AuthService] Error stack:', error instanceof Error ? error.stack : 'No stack');
+            console.error('❌ [AuthService] Error details:', {
+                message: error instanceof Error ? error.message : String(error),
+                name: error instanceof Error ? error.name : typeof error,
+                code: error?.code,
+            });
+            if (error instanceof common_1.UnauthorizedException || error instanceof common_1.InternalServerErrorException) {
                 throw error;
             }
-            if (error.message.includes('Database')) {
-                throw new Error('Authentication service temporarily unavailable');
+            if (error instanceof Error && (error.message.includes('Database') || error.message.includes('connection'))) {
+                throw new common_1.InternalServerErrorException('Authentication service temporarily unavailable. Please try again later.');
             }
-            throw new common_1.UnauthorizedException('Login failed. Please try again.');
+            if (error instanceof Error && error.message.includes('Token')) {
+                throw new common_1.InternalServerErrorException('Token generation failed. Please try again.');
+            }
+            console.error('❌ [AuthService] Unexpected error type:', error);
+            throw new common_1.InternalServerErrorException('Login failed. Please try again.');
         }
     }
     async getStaffById(id) {

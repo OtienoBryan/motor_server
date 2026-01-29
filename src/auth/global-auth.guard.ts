@@ -10,17 +10,24 @@ export class GlobalAuthGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    // Check if the route is marked as public
-    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    try {
+      // Check if the route is marked as public
+      const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
 
-    if (isPublic) {
-      return true;
+      if (isPublic) {
+        console.log('✅ [GlobalAuthGuard] Route is public, allowing access');
+        return true;
+      }
+
+      console.log('🔒 [GlobalAuthGuard] Route requires authentication, checking JWT');
+      // Apply JWT authentication for all other routes
+      return this.jwtAuthGuard.canActivate(context);
+    } catch (error) {
+      console.error('❌ [GlobalAuthGuard] Error during authentication:', error);
+      throw error;
     }
-
-    // Apply JWT authentication for all other routes
-    return this.jwtAuthGuard.canActivate(context);
   }
 }

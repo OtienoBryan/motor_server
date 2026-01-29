@@ -47,11 +47,25 @@ let JwtService = class JwtService {
     expiresIn = process.env.JWT_EXPIRES_IN || '24h';
     generateToken(payload) {
         try {
-            return jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
+            if (!this.secretKey || this.secretKey === 'moonsun-admin-secret-key-2024') {
+                console.warn('⚠️ [JwtService] Using default JWT secret. Set JWT_SECRET environment variable for production!');
+            }
+            if (!payload || !payload.sub) {
+                console.error('❌ [JwtService] Invalid payload for token generation:', payload);
+                throw new Error('Invalid token payload: missing subject (sub)');
+            }
+            const token = jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
+            console.log('✅ [JwtService] Token generated successfully');
+            return token;
         }
         catch (error) {
             console.error('❌ [JwtService] Error generating token:', error);
-            throw new Error('Token generation failed');
+            console.error('❌ [JwtService] Error details:', {
+                message: error instanceof Error ? error.message : String(error),
+                payload: payload,
+                secretKeyLength: this.secretKey?.length || 0,
+            });
+            throw new Error(`Token generation failed: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
     verifyToken(token) {

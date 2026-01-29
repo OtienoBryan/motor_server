@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class JwtService {
       
       if (!payload || !payload.sub) {
         console.error('❌ [JwtService] Invalid payload for token generation:', payload);
-        throw new Error('Invalid token payload: missing subject (sub)');
+        throw new InternalServerErrorException('Invalid token payload: missing subject (sub)');
       }
       
       const token = jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn } as jwt.SignOptions);
@@ -27,7 +27,13 @@ export class JwtService {
         payload: payload,
         secretKeyLength: this.secretKey?.length || 0,
       });
-      throw new Error(`Token generation failed: ${error instanceof Error ? error.message : String(error)}`);
+      
+      // If it's already an HTTP exception, re-throw it
+      if (error instanceof InternalServerErrorException) {
+        throw error;
+      }
+      
+      throw new InternalServerErrorException(`Token generation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Staff } from '../entities/staff.entity';
@@ -61,8 +61,27 @@ export class AuthService {
       }
 
       // Secure password comparison using bcrypt
-      const isPasswordValid = await bcrypt.compare(password, staff.password);
-      console.log('🔐 [AuthService] Password validation result:', isPasswordValid);
+      if (!staff.password) {
+        console.error('❌ [AuthService] Staff password is null or empty');
+        return null;
+      }
+      
+      let isPasswordValid = false;
+      try {
+        // Check if password is already hashed (bcrypt hashes start with $2a$, $2b$, or $2y$)
+        if (staff.password.startsWith('$2')) {
+          isPasswordValid = await bcrypt.compare(password, staff.password);
+        } else {
+          // If password is not hashed, compare directly (for migration purposes)
+          console.warn('⚠️ [AuthService] Password is not hashed, comparing directly');
+          isPasswordValid = password === staff.password;
+        }
+        console.log('🔐 [AuthService] Password validation result:', isPasswordValid);
+      } catch (bcryptError) {
+        console.error('❌ [AuthService] Bcrypt comparison error:', bcryptError);
+        console.error('❌ [AuthService] Password hash format:', staff.password?.substring(0, 10));
+        return null;
+      }
       
       if (!isPasswordValid) {
         console.log('❌ [AuthService] Invalid password');
@@ -76,11 +95,14 @@ export class AuthService {
       
       // Handle specific database errors
       if (error.code === 'ECONNREFUSED') {
-        throw new Error('Database connection failed. Please try again later.');
+        console.error('❌ [AuthService] Database connection refused');
+        throw new InternalServerErrorException('Database connection failed. Please try again later.');
       } else if (error.code === 'ETIMEDOUT') {
-        throw new Error('Database request timeout. Please try again.');
+        console.error('❌ [AuthService] Database request timeout');
+        throw new InternalServerErrorException('Database request timeout. Please try again.');
       } else {
-        throw new Error('Authentication service temporarily unavailable');
+        console.error('❌ [AuthService] Unknown database error:', error);
+        throw new InternalServerErrorException('Authentication service temporarily unavailable');
       }
     }
   }
@@ -129,18 +151,31 @@ export class AuthService {
       };
     } catch (error) {
       console.error('❌ [AuthService] Login error:', error);
+      console.error('❌ [AuthService] Error stack:', error instanceof Error ? error.stack : 'No stack');
+      console.error('❌ [AuthService] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : typeof error,
+        code: (error as any)?.code,
+      });
       
-      // Re-throw UnauthorizedException as-is
-      if (error instanceof UnauthorizedException) {
+      // Re-throw HTTP exceptions as-is (UnauthorizedException, InternalServerErrorException, etc.)
+      if (error instanceof UnauthorizedException || error instanceof InternalServerErrorException) {
         throw error;
       }
       
-      // Handle other errors
-      if (error.message.includes('Database')) {
-        throw new Error('Authentication service temporarily unavailable');
+      // Handle database connection errors
+      if (error instanceof Error && (error.message.includes('Database') || error.message.includes('connection'))) {
+        throw new InternalServerErrorException('Authentication service temporarily unavailable. Please try again later.');
       }
       
-      throw new UnauthorizedException('Login failed. Please try again.');
+      // Handle JWT errors
+      if (error instanceof Error && error.message.includes('Token')) {
+        throw new InternalServerErrorException('Token generation failed. Please try again.');
+      }
+      
+      // For any other unexpected errors, log them and return a generic error
+      console.error('❌ [AuthService] Unexpected error type:', error);
+      throw new InternalServerErrorException('Login failed. Please try again.');
     }
   }
 

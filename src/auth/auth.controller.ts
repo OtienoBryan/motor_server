@@ -11,7 +11,21 @@ export class AuthController {
   @Public()
   @Post('admin/login')
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    try {
+      console.log('🔐 [AuthController] Login request received:', { email: loginDto.email });
+      const result = await this.authService.login(loginDto);
+      console.log('✅ [AuthController] Login successful');
+      return result;
+    } catch (error) {
+      console.error('❌ [AuthController] Login error:', error);
+      console.error('❌ [AuthController] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : typeof error,
+        stack: error instanceof Error ? error.stack : 'No stack',
+      });
+      // Re-throw the error so NestJS can handle it properly
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

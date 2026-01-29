@@ -52,7 +52,7 @@ let JwtService = class JwtService {
             }
             if (!payload || !payload.sub) {
                 console.error('❌ [JwtService] Invalid payload for token generation:', payload);
-                throw new Error('Invalid token payload: missing subject (sub)');
+                throw new common_1.InternalServerErrorException('Invalid token payload: missing subject (sub)');
             }
             const token = jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
             console.log('✅ [JwtService] Token generated successfully');
@@ -65,7 +65,10 @@ let JwtService = class JwtService {
                 payload: payload,
                 secretKeyLength: this.secretKey?.length || 0,
             });
-            throw new Error(`Token generation failed: ${error instanceof Error ? error.message : String(error)}`);
+            if (error instanceof common_1.InternalServerErrorException) {
+                throw error;
+            }
+            throw new common_1.InternalServerErrorException(`Token generation failed: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
     verifyToken(token) {

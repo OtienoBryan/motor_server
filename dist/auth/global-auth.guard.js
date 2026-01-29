@@ -21,14 +21,22 @@ let GlobalAuthGuard = class GlobalAuthGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride('isPublic', [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-        if (isPublic) {
-            return true;
+        try {
+            const isPublic = this.reflector.getAllAndOverride('isPublic', [
+                context.getHandler(),
+                context.getClass(),
+            ]);
+            if (isPublic) {
+                console.log('✅ [GlobalAuthGuard] Route is public, allowing access');
+                return true;
+            }
+            console.log('🔒 [GlobalAuthGuard] Route requires authentication, checking JWT');
+            return this.jwtAuthGuard.canActivate(context);
         }
-        return this.jwtAuthGuard.canActivate(context);
+        catch (error) {
+            console.error('❌ [GlobalAuthGuard] Error during authentication:', error);
+            throw error;
+        }
     }
 };
 exports.GlobalAuthGuard = GlobalAuthGuard;

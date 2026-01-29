@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
+const public_decorator_1 = require("./auth/public.decorator");
 let AppController = class AppController {
     appService;
     constructor(appService) {
@@ -20,14 +21,44 @@ let AppController = class AppController {
     getHello() {
         return this.appService.getHello();
     }
+    healthCheck() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development',
+        };
+    }
+    testProxy() {
+        return {
+            message: 'Proxy test successful',
+            timestamp: new Date().toISOString(),
+            backendUrl: 'http://139.59.2.43:5009',
+        };
+    }
 };
 exports.AppController = AppController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "healthCheck", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('test-proxy'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "testProxy", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

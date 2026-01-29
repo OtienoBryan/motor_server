@@ -50,14 +50,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
       } : exception,
     });
 
-    // Send response
-    response.status(status).json({
+    // Send response - always include error details for debugging
+    const responseBody: any = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
       message,
-      ...(process.env.NODE_ENV === 'development' && errorDetails ? { errorDetails } : {}),
-    });
+    };
+
+    // Include error details for debugging (always include, not just in development)
+    if (errorDetails) {
+      responseBody.error = errorDetails.name || 'UnknownError';
+      if (process.env.NODE_ENV === 'development' || process.env.INCLUDE_ERROR_STACK === 'true') {
+        responseBody.stack = errorDetails.stack;
+        responseBody.fullError = errorDetails;
+      }
+    }
+
+    response.status(status).json(responseBody);
   }
 }

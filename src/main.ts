@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, HttpException } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { SecurityInterceptor } from './auth/security.interceptor';
 import { HttpExceptionFilter } from './common/http-exception.filter';
@@ -97,8 +97,12 @@ async function bootstrap() {
     maxAge: 86400, // 24 hours
   });
   
-  await app.listen(process.env.PORT ?? 3001);
-  console.log(`🚀 Server running on http://localhost:${process.env.PORT ?? 3001}`);
+  const port = process.env.PORT ?? 5009;
+  const host = process.env.HOST ?? '0.0.0.0'; // Listen on all interfaces, not just localhost
+  
+  await app.listen(port, host);
+  console.log(`🚀 Server running on http://${host}:${port}`);
+  console.log(`🌐 Server accessible from: http://139.59.2.43:${port}`);
   console.log(`🔒 Security features enabled: Helmet, CORS, Validation`);
 }
 bootstrap();

@@ -20,6 +20,9 @@ export class KeyAccount {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  client_type: string | null;
+
   @Column({ type: 'int', default: 1 })
   is_active: number;
 

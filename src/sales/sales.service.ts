@@ -232,23 +232,50 @@ export class SalesService {
 
   }
 
-  async findAll(stationId?: number, keyAccountId?: number): Promise<Sale[]> {
+  async findAll(stationId?: number, keyAccountId?: number, clientType?: string): Promise<Sale[]> {
     console.log('💰 [SalesService] Finding all sales');
+    console.log(`🔍 [SalesService] Filters - stationId: ${stationId}, keyAccountId: ${keyAccountId}, clientType: ${clientType}`);
     
-    const where: any = {};
+    const queryBuilder = this.saleRepository.createQueryBuilder('sale')
+      .leftJoinAndSelect('sale.station', 'station')
+      .leftJoinAndSelect('sale.vehicle', 'vehicle');
+    
+    // Use INNER JOIN for keyAccount when filtering by clientType to ensure proper filtering
+    if (clientType) {
+      queryBuilder.innerJoinAndSelect('sale.keyAccount', 'keyAccount');
+      console.log(`🔍 [SalesService] Using INNER JOIN to filter by client_type from KeyAccounts table: ${clientType}`);
+    } else {
+      queryBuilder.leftJoinAndSelect('sale.keyAccount', 'keyAccount');
+    }
+    
+    // Build WHERE conditions
+    const whereConditions: string[] = [];
+    const whereParams: Record<string, any> = {};
+    
     if (stationId) {
-      where.stationId = stationId;
+      whereConditions.push('sale.stationId = :stationId');
+      whereParams.stationId = stationId;
     }
+    
     if (keyAccountId) {
-      where.keyAccountId = keyAccountId;
+      whereConditions.push('sale.keyAccountId = :keyAccountId');
+      whereParams.keyAccountId = keyAccountId;
     }
     
-    const sales = await this.saleRepository.find({
-      where,
-      relations: ['station', 'keyAccount', 'vehicle'],
-      order: { saleDate: 'DESC' },
-    });
+    // Filter by client_type from KeyAccounts table
+    if (clientType) {
+      whereConditions.push('keyAccount.client_type = :clientType');
+      whereParams.clientType = clientType;
+    }
     
+    // Apply WHERE conditions
+    if (whereConditions.length > 0) {
+      queryBuilder.where(whereConditions.join(' AND '), whereParams);
+    }
+    
+    queryBuilder.orderBy('sale.saleDate', 'DESC');
+    
+    const sales = await queryBuilder.getMany();
     console.log(`✅ [SalesService] Found ${sales.length} sales`);
     return sales;
   }

@@ -5,6 +5,7 @@ export declare class KeyAccount {
     contact: string;
     account_number: string;
     description: string | null;
+    client_type: string | null;
     is_active: number;
     loyaltyPoints: number;
     balance: number;

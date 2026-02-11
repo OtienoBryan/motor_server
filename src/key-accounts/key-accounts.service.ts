@@ -42,17 +42,55 @@ export class KeyAccountsService {
     return keyAccount;
   }
 
+  private async generateUniqueAccountNumber(): Promise<string> {
+    let accountNumber: string;
+    let isUnique = false;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    while (!isUnique && attempts < maxAttempts) {
+      // Generate account number: CLT-{timestamp}-{random 4 digits}
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      accountNumber = `CLT-${timestamp}-${random}`;
+
+      // Check if account number already exists
+      const existingAccount = await this.keyAccountRepository.findOne({
+        where: { account_number: accountNumber },
+      });
+
+      if (!existingAccount) {
+        isUnique = true;
+      } else {
+        attempts++;
+      }
+    }
+
+    if (!isUnique) {
+      throw new Error('Failed to generate unique account number after multiple attempts');
+    }
+
+    return accountNumber!;
+  }
+
   async create(createKeyAccountDto: CreateKeyAccountDto): Promise<KeyAccount> {
     console.log('🏢 [KeyAccountsService] Creating new key account:', createKeyAccountDto.name);
     console.log('🏢 [KeyAccountsService] DTO data:', JSON.stringify(createKeyAccountDto, null, 2));
     
-    // Check if account number already exists
-    const existingAccount = await this.keyAccountRepository.findOne({
-      where: { account_number: createKeyAccountDto.account_number },
-    });
-    
-    if (existingAccount) {
-      throw new Error(`Account number ${createKeyAccountDto.account_number} already exists`);
+    // Generate account number if not provided
+    let accountNumber = createKeyAccountDto.account_number;
+    if (!accountNumber || accountNumber.trim() === '') {
+      accountNumber = await this.generateUniqueAccountNumber();
+      console.log(`🏢 [KeyAccountsService] Generated account number: ${accountNumber}`);
+    } else {
+      // Check if provided account number already exists
+      const existingAccount = await this.keyAccountRepository.findOne({
+        where: { account_number: accountNumber },
+      });
+      
+      if (existingAccount) {
+        throw new Error(`Account number ${accountNumber} already exists`);
+      }
     }
     
     try {
@@ -60,8 +98,9 @@ export class KeyAccountsService {
         name: createKeyAccountDto.name,
         email: createKeyAccountDto.email,
         contact: createKeyAccountDto.contact,
-        account_number: createKeyAccountDto.account_number,
+        account_number: accountNumber,
         description: createKeyAccountDto.description || null,
+        client_type: createKeyAccountDto.client_type || null,
         is_active: createKeyAccountDto.is_active !== undefined ? createKeyAccountDto.is_active : 1,
         fuel_price: createKeyAccountDto.fuel_price !== undefined ? createKeyAccountDto.fuel_price : null,
       });

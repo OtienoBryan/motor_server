@@ -14,13 +14,17 @@ export class CreateKeyAccountDto {
   @IsNotEmpty()
   contact: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  account_number: string;
+  account_number?: string;
 
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  client_type?: string;
 
   @IsOptional()
   @IsInt()

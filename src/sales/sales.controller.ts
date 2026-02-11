@@ -36,12 +36,13 @@ export class SalesController {
   @Get()
   async findAll(
     @Query('stationId') stationId?: string,
-    @Query('keyAccountId') keyAccountId?: string
+    @Query('keyAccountId') keyAccountId?: string,
+    @Query('clientType') clientType?: string
   ): Promise<Sale[]> {
     console.log('💰 [SalesController] GET /sales');
     const station = stationId ? parseInt(stationId, 10) : undefined;
     const keyAccount = keyAccountId ? parseInt(keyAccountId, 10) : undefined;
-    return this.salesService.findAll(station, keyAccount);
+    return this.salesService.findAll(station, keyAccount, clientType);
   }
 
   @Get(':id')

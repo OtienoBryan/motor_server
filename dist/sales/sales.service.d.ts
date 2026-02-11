@@ -12,6 +12,6 @@ export declare class SalesService {
     private dataSource;
     constructor(saleRepository: Repository<Sale>, stationRepository: Repository<Station>, keyAccountRepository: Repository<KeyAccount>, loyaltyPointsLedgerRepository: Repository<LoyaltyPointsLedger>, dataSource: DataSource);
     create(createDto: CreateSaleDto): Promise<Sale>;
-    findAll(stationId?: number, keyAccountId?: number): Promise<Sale[]>;
+    findAll(stationId?: number, keyAccountId?: number, clientType?: string): Promise<Sale[]>;
     findOne(id: number): Promise<Sale>;
 }

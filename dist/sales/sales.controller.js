@@ -36,11 +36,11 @@ let SalesController = class SalesController {
             throw error;
         }
     }
-    async findAll(stationId, keyAccountId) {
+    async findAll(stationId, keyAccountId, clientType) {
         console.log('💰 [SalesController] GET /sales');
         const station = stationId ? parseInt(stationId, 10) : undefined;
         const keyAccount = keyAccountId ? parseInt(keyAccountId, 10) : undefined;
-        return this.salesService.findAll(station, keyAccount);
+        return this.salesService.findAll(station, keyAccount, clientType);
     }
     async findOne(id) {
         console.log(`💰 [SalesController] GET /sales/${id}`);
@@ -59,8 +59,9 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('stationId')),
     __param(1, (0, common_1.Query)('keyAccountId')),
+    __param(2, (0, common_1.Query)('clientType')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], SalesController.prototype, "findAll", null);
 __decorate([

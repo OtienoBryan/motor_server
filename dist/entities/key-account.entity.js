@@ -18,6 +18,7 @@ let KeyAccount = class KeyAccount {
     contact;
     account_number;
     description;
+    client_type;
     is_active;
     loyaltyPoints;
     balance;
@@ -50,6 +51,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", Object)
 ], KeyAccount.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", Object)
+], KeyAccount.prototype, "client_type", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'int', default: 1 }),
     __metadata("design:type", Number)

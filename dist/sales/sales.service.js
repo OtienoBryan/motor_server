@@ -209,20 +209,38 @@ let SalesService = class SalesService {
             await queryRunner.release();
         }
     }
-    async findAll(stationId, keyAccountId) {
+    async findAll(stationId, keyAccountId, clientType) {
         console.log('💰 [SalesService] Finding all sales');
-        const where = {};
+        console.log(`🔍 [SalesService] Filters - stationId: ${stationId}, keyAccountId: ${keyAccountId}, clientType: ${clientType}`);
+        const queryBuilder = this.saleRepository.createQueryBuilder('sale')
+            .leftJoinAndSelect('sale.station', 'station')
+            .leftJoinAndSelect('sale.vehicle', 'vehicle');
+        if (clientType) {
+            queryBuilder.innerJoinAndSelect('sale.keyAccount', 'keyAccount');
+            console.log(`🔍 [SalesService] Using INNER JOIN to filter by client_type from KeyAccounts table: ${clientType}`);
+        }
+        else {
+            queryBuilder.leftJoinAndSelect('sale.keyAccount', 'keyAccount');
+        }
+        const whereConditions = [];
+        const whereParams = {};
         if (stationId) {
-            where.stationId = stationId;
+            whereConditions.push('sale.stationId = :stationId');
+            whereParams.stationId = stationId;
         }
         if (keyAccountId) {
-            where.keyAccountId = keyAccountId;
+            whereConditions.push('sale.keyAccountId = :keyAccountId');
+            whereParams.keyAccountId = keyAccountId;
         }
-        const sales = await this.saleRepository.find({
-            where,
-            relations: ['station', 'keyAccount', 'vehicle'],
-            order: { saleDate: 'DESC' },
-        });
+        if (clientType) {
+            whereConditions.push('keyAccount.client_type = :clientType');
+            whereParams.clientType = clientType;
+        }
+        if (whereConditions.length > 0) {
+            queryBuilder.where(whereConditions.join(' AND '), whereParams);
+        }
+        queryBuilder.orderBy('sale.saleDate', 'DESC');
+        const sales = await queryBuilder.getMany();
         console.log(`✅ [SalesService] Found ${sales.length} sales`);
         return sales;
     }

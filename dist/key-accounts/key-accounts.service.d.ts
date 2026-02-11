@@ -9,6 +9,7 @@ export declare class KeyAccountsService {
     constructor(keyAccountRepository: Repository<KeyAccount>, keyAccountFuelPricesService: KeyAccountFuelPricesService);
     findAll(): Promise<KeyAccount[]>;
     findOne(id: number): Promise<KeyAccount>;
+    private generateUniqueAccountNumber;
     create(createKeyAccountDto: CreateKeyAccountDto): Promise<KeyAccount>;
     update(id: number, updateKeyAccountDto: UpdateKeyAccountDto, staffId?: number): Promise<KeyAccount>;
     remove(id: number): Promise<void>;

@@ -18,6 +18,7 @@ class CreateKeyAccountDto {
     contact;
     account_number;
     description;
+    client_type;
     is_active;
     fuel_price;
 }
@@ -38,8 +39,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateKeyAccountDto.prototype, "contact", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateKeyAccountDto.prototype, "account_number", void 0);
 __decorate([
@@ -47,6 +48,11 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateKeyAccountDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateKeyAccountDto.prototype, "client_type", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),

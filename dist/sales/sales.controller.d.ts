@@ -5,6 +5,6 @@ export declare class SalesController {
     private readonly salesService;
     constructor(salesService: SalesService);
     create(createDto: CreateSaleDto): Promise<Sale>;
-    findAll(stationId?: string, keyAccountId?: string): Promise<Sale[]>;
+    findAll(stationId?: string, keyAccountId?: string, clientType?: string): Promise<Sale[]>;
     findOne(id: number): Promise<Sale>;
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StaffLeave = exports.CheckinRecord = exports.LoyaltyPointsLedger = exports.Conversion = exports.Crew = exports.StoreInventory = exports.Store = exports.BookingPassenger = exports.Booking = exports.Passenger = exports.SeatReservation = exports.FlightSeries = exports.Destination = exports.Aircraft = exports.Category = exports.Product = exports.Vehicle = exports.KeyAccount = exports.FuelPrice = exports.Station = exports.Route = exports.Region = exports.SalesRep = exports.Country = exports.Notice = exports.ChatMessage = exports.ChatRoom = exports.LoginHistory = exports.Department = exports.Staff = void 0;
+exports.CustomerCard = exports.StaffLeave = exports.CheckinRecord = exports.LoyaltyPointsLedger = exports.Conversion = exports.Crew = exports.StoreInventory = exports.Store = exports.BookingPassenger = exports.Booking = exports.Passenger = exports.SeatReservation = exports.FlightSeries = exports.Destination = exports.Aircraft = exports.Category = exports.Product = exports.Vehicle = exports.KeyAccount = exports.FuelPrice = exports.Station = exports.Route = exports.Region = exports.SalesRep = exports.Country = exports.Notice = exports.ChatMessage = exports.ChatRoom = exports.LoginHistory = exports.Department = exports.Staff = void 0;
 var staff_entity_1 = require("./staff.entity");
 Object.defineProperty(exports, "Staff", { enumerable: true, get: function () { return staff_entity_1.Staff; } });
 var department_entity_1 = require("./department.entity");
@@ -61,4 +61,6 @@ var checkin_record_entity_1 = require("./checkin-record.entity");
 Object.defineProperty(exports, "CheckinRecord", { enumerable: true, get: function () { return checkin_record_entity_1.CheckinRecord; } });
 var staff_leave_entity_1 = require("./staff-leave.entity");
 Object.defineProperty(exports, "StaffLeave", { enumerable: true, get: function () { return staff_leave_entity_1.StaffLeave; } });
+var customer_card_entity_1 = require("./customer-card.entity");
+Object.defineProperty(exports, "CustomerCard", { enumerable: true, get: function () { return customer_card_entity_1.CustomerCard; } });
 //# sourceMappingURL=index.js.map

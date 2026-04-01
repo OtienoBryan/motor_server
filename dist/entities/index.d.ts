@@ -28,3 +28,4 @@ export { Conversion } from './conversion.entity';
 export { LoyaltyPointsLedger } from './loyalty-points-ledger.entity';
 export { CheckinRecord } from './checkin-record.entity';
 export { StaffLeave } from './staff-leave.entity';
+export { CustomerCard } from './customer-card.entity';

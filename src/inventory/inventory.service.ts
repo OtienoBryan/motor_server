@@ -5,6 +5,7 @@ import { InventoryLedger, TransactionType } from '../entities/inventory-ledger.e
 import { Station } from '../entities/station.entity';
 import { CreateInventoryLedgerDto } from './dto/create-inventory-ledger.dto';
 import { UpdateInventoryLedgerDto } from './dto/update-inventory-ledger.dto';
+import { CreateDeliveryApprovalDto } from './dto/create-delivery-approval.dto';
 
 @Injectable()
 export class InventoryService {
@@ -15,6 +16,27 @@ export class InventoryService {
     private stationRepository: Repository<Station>,
     private dataSource: DataSource,
   ) {}
+
+  private async ensureDeliveryApprovalsTable(): Promise<void> {
+    await this.dataSource.query(`
+      CREATE TABLE IF NOT EXISTS gas_delivery_approvals (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        station_id INT(11) NOT NULL,
+        quantity DECIMAL(10,2) NOT NULL,
+        delivery_date DATE NOT NULL,
+        comment TEXT NULL,
+        status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+        submitted_by INT(11) NULL,
+        approved_by INT(11) NULL,
+        approved_at DATETIME NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_gda_station_id (station_id),
+        INDEX idx_gda_status (status),
+        INDEX idx_gda_delivery_date (delivery_date)
+      );
+    `);
+  }
 
   async create(createInventoryLedgerDto: CreateInventoryLedgerDto): Promise<InventoryLedger> {
     console.log('📦 [InventoryService] Creating inventory ledger entry');
@@ -94,6 +116,118 @@ export class InventoryService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async createDeliveryApproval(createDeliveryApprovalDto: CreateDeliveryApprovalDto): Promise<any> {
+    console.log('📦 [InventoryService] Creating gas delivery approval request');
+
+    const station = await this.stationRepository.findOne({
+      where: { id: createDeliveryApprovalDto.stationId }
+    });
+
+    if (!station) {
+      throw new NotFoundException(`Station with ID ${createDeliveryApprovalDto.stationId} not found`);
+    }
+
+    await this.ensureDeliveryApprovalsTable();
+
+    const result = await this.dataSource.query(
+      `
+      INSERT INTO gas_delivery_approvals (
+        station_id,
+        quantity,
+        delivery_date,
+        comment,
+        submitted_by,
+        status
+      ) VALUES (?, ?, ?, ?, ?, 'pending')
+      `,
+      [
+        createDeliveryApprovalDto.stationId,
+        createDeliveryApprovalDto.quantity,
+        createDeliveryApprovalDto.deliveryDate,
+        createDeliveryApprovalDto.comment ?? null,
+        createDeliveryApprovalDto.submittedBy ?? null
+      ]
+    );
+
+    const [saved] = await this.dataSource.query(
+      `
+      SELECT
+        gda.id,
+        gda.station_id AS stationId,
+        s.name AS stationName,
+        gda.quantity,
+        gda.delivery_date AS deliveryDate,
+        gda.comment,
+        gda.status,
+        gda.submitted_by AS submittedBy,
+        gda.created_at AS createdAt
+      FROM gas_delivery_approvals gda
+      LEFT JOIN Stations s ON s.id = gda.station_id
+      WHERE gda.id = ?
+      `,
+      [result.insertId]
+    );
+
+    return saved;
+  }
+
+  async getDeliveryApprovals(
+    status?: string,
+    stationId?: number,
+    startDate?: string,
+    endDate?: string
+  ): Promise<any[]> {
+    await this.ensureDeliveryApprovalsTable();
+
+    const whereClauses: string[] = [];
+    const params: any[] = [];
+
+    if (status) {
+      whereClauses.push('gda.status = ?');
+      params.push(status);
+    }
+    if (stationId) {
+      whereClauses.push('gda.station_id = ?');
+      params.push(stationId);
+    }
+    if (startDate) {
+      whereClauses.push('gda.delivery_date >= ?');
+      params.push(startDate);
+    }
+    if (endDate) {
+      whereClauses.push('gda.delivery_date <= ?');
+      params.push(endDate);
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const rows = await this.dataSource.query(
+      `
+      SELECT
+        gda.id,
+        gda.station_id AS stationId,
+        s.name AS stationName,
+        gda.quantity,
+        gda.delivery_date AS deliveryDate,
+        gda.comment,
+        gda.status,
+        gda.submitted_by AS submittedBy,
+        gda.approved_by AS approvedBy,
+        ab.name AS approvedByName,
+        gda.approved_at AS approvedAt,
+        gda.created_at AS createdAt
+      FROM gas_delivery_approvals gda
+      LEFT JOIN Stations s ON s.id = gda.station_id
+      LEFT JOIN staff ab ON ab.id = gda.approved_by
+      ${whereSql}
+      ORDER BY gda.created_at DESC
+      `,
+      params
+    );
+
+    return rows;
   }
 
   async findAll(): Promise<InventoryLedger[]> {

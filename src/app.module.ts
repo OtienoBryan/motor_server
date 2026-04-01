@@ -28,6 +28,10 @@ import { ConversionsModule } from './conversions/conversions.module';
 import { LoginHistoryModule } from './login-history/login-history.module';
 import { CheckinRecordsModule } from './checkin-records/checkin-records.module';
 import { LeavesModule } from './leaves/leaves.module';
+import { CustomerCardsModule } from './customer-cards/customer-cards.module';
+import { VisibilityReportsModule } from './visibility-reports/visibility-reports.module';
+import { AttendantsCashHandModule } from './attendants-cash-hand/attendants-cash-hand.module';
+import { ManagersCashApprovalsModule } from './managers-cash-approvals/managers-cash-approvals.module';
 import { GlobalAuthGuard } from './auth/global-auth.guard';
 
 @Module({
@@ -69,6 +73,10 @@ import { GlobalAuthGuard } from './auth/global-auth.guard';
     LoginHistoryModule,
     CheckinRecordsModule,
     LeavesModule,
+    CustomerCardsModule,
+    VisibilityReportsModule,
+    AttendantsCashHandModule,
+    ManagersCashApprovalsModule,
   ],
   controllers: [AppController],
   providers: [

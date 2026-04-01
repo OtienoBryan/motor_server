@@ -15,6 +15,7 @@ import { InventoryLedger } from '../entities/inventory-ledger.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateInventoryLedgerDto } from './dto/create-inventory-ledger.dto';
 import { UpdateInventoryLedgerDto } from './dto/update-inventory-ledger.dto';
+import { CreateDeliveryApprovalDto } from './dto/create-delivery-approval.dto';
 
 @Controller('inventory')
 @UseGuards(JwtAuthGuard)
@@ -33,6 +34,27 @@ export class InventoryController {
       console.error('❌ [InventoryController] Error in create:', error);
       throw error;
     }
+  }
+
+  @Post('delivery-approvals')
+  async createDeliveryApproval(@Body() createDeliveryApprovalDto: CreateDeliveryApprovalDto): Promise<any> {
+    console.log('📦 [InventoryController] POST /inventory/delivery-approvals');
+    return this.inventoryService.createDeliveryApproval(createDeliveryApprovalDto);
+  }
+
+  @Get('delivery-approvals')
+  async getDeliveryApprovals(
+    @Query('status') status?: string,
+    @Query('stationId') stationId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string
+  ): Promise<any[]> {
+    return this.inventoryService.getDeliveryApprovals(
+      status,
+      stationId ? Number(stationId) : undefined,
+      startDate,
+      endDate
+    );
   }
 
   @Get()

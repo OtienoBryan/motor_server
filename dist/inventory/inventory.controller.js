@@ -18,6 +18,7 @@ const inventory_service_1 = require("./inventory.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_inventory_ledger_dto_1 = require("./dto/create-inventory-ledger.dto");
 const update_inventory_ledger_dto_1 = require("./dto/update-inventory-ledger.dto");
+const create_delivery_approval_dto_1 = require("./dto/create-delivery-approval.dto");
 let InventoryController = class InventoryController {
     inventoryService;
     constructor(inventoryService) {
@@ -35,6 +36,13 @@ let InventoryController = class InventoryController {
             console.error('❌ [InventoryController] Error in create:', error);
             throw error;
         }
+    }
+    async createDeliveryApproval(createDeliveryApprovalDto) {
+        console.log('📦 [InventoryController] POST /inventory/delivery-approvals');
+        return this.inventoryService.createDeliveryApproval(createDeliveryApprovalDto);
+    }
+    async getDeliveryApprovals(status, stationId, startDate, endDate) {
+        return this.inventoryService.getDeliveryApprovals(status, stationId ? Number(stationId) : undefined, startDate, endDate);
     }
     async findAll(stationId) {
         console.log('📦 [InventoryController] GET /inventory');
@@ -74,6 +82,23 @@ __decorate([
     __metadata("design:paramtypes", [create_inventory_ledger_dto_1.CreateInventoryLedgerDto]),
     __metadata("design:returntype", Promise)
 ], InventoryController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('delivery-approvals'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_delivery_approval_dto_1.CreateDeliveryApprovalDto]),
+    __metadata("design:returntype", Promise)
+], InventoryController.prototype, "createDeliveryApproval", null);
+__decorate([
+    (0, common_1.Get)('delivery-approvals'),
+    __param(0, (0, common_1.Query)('status')),
+    __param(1, (0, common_1.Query)('stationId')),
+    __param(2, (0, common_1.Query)('startDate')),
+    __param(3, (0, common_1.Query)('endDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], InventoryController.prototype, "getDeliveryApprovals", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('stationId')),

@@ -29,6 +29,7 @@ import { Conversion } from '../entities/conversion.entity';
 import { LoyaltyPointsLedger } from '../entities/loyalty-points-ledger.entity';
 import { CheckinRecord } from '../entities/checkin-record.entity';
 import { StaffLeave } from '../entities/staff-leave.entity';
+import { CustomerCard } from '../entities/customer-card.entity';
 
 export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
   type: 'mysql',
@@ -37,7 +38,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
   username: configService.get<string>('DB_USERNAME'),
   password: configService.get<string>('DB_PASSWORD'),
   database: configService.get<string>('DB_DATABASE'),
-  entities: [Staff, Department, ChatRoom, ChatMessage, Notice, Country, SalesRep, Region, Route, LoginHistory, Station, FuelPrice, Client, Product, Category, Aircraft, Destination, FlightSeries, SeatReservation, Passenger, Booking, BookingPassenger, ClientLedger, SalesOrder, SalesOrderItem, Supplier, PurchaseOrder, PurchaseOrderItem, Task, Crew, KeyAccount, KeyAccountLedger, KeyAccountFuelPrice, Vehicle, InventoryLedger, Sale, Conversion, LoyaltyPointsLedger, CheckinRecord, StaffLeave],
+  entities: [Staff, Department, ChatRoom, ChatMessage, Notice, Country, SalesRep, Region, Route, LoginHistory, Station, FuelPrice, Client, Product, Category, Aircraft, Destination, FlightSeries, SeatReservation, Passenger, Booking, BookingPassenger, ClientLedger, SalesOrder, SalesOrderItem, Supplier, PurchaseOrder, PurchaseOrderItem, Task, Crew, KeyAccount, KeyAccountLedger, KeyAccountFuelPrice, Vehicle, InventoryLedger, Sale, Conversion, LoyaltyPointsLedger, CheckinRecord, StaffLeave, CustomerCard],
   synchronize: false, // Disabled to avoid schema conflicts
   logging: configService.get<string>('NODE_ENV') === 'development',
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],

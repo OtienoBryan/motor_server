@@ -2,10 +2,13 @@ import { InventoryService } from './inventory.service';
 import { InventoryLedger } from '../entities/inventory-ledger.entity';
 import { CreateInventoryLedgerDto } from './dto/create-inventory-ledger.dto';
 import { UpdateInventoryLedgerDto } from './dto/update-inventory-ledger.dto';
+import { CreateDeliveryApprovalDto } from './dto/create-delivery-approval.dto';
 export declare class InventoryController {
     private readonly inventoryService;
     constructor(inventoryService: InventoryService);
     create(createInventoryLedgerDto: CreateInventoryLedgerDto): Promise<InventoryLedger>;
+    createDeliveryApproval(createDeliveryApprovalDto: CreateDeliveryApprovalDto): Promise<any>;
+    getDeliveryApprovals(status?: string, stationId?: string, startDate?: string, endDate?: string): Promise<any[]>;
     findAll(stationId?: string): Promise<InventoryLedger[]>;
     getStationInventory(): Promise<any[]>;
     getReport(): Promise<InventoryLedger[]>;

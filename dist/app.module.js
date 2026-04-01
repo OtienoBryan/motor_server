@@ -37,6 +37,10 @@ const conversions_module_1 = require("./conversions/conversions.module");
 const login_history_module_1 = require("./login-history/login-history.module");
 const checkin_records_module_1 = require("./checkin-records/checkin-records.module");
 const leaves_module_1 = require("./leaves/leaves.module");
+const customer_cards_module_1 = require("./customer-cards/customer-cards.module");
+const visibility_reports_module_1 = require("./visibility-reports/visibility-reports.module");
+const attendants_cash_hand_module_1 = require("./attendants-cash-hand/attendants-cash-hand.module");
+const managers_cash_approvals_module_1 = require("./managers-cash-approvals/managers-cash-approvals.module");
 const global_auth_guard_1 = require("./auth/global-auth.guard");
 let AppModule = class AppModule {
 };
@@ -81,6 +85,10 @@ exports.AppModule = AppModule = __decorate([
             login_history_module_1.LoginHistoryModule,
             checkin_records_module_1.CheckinRecordsModule,
             leaves_module_1.LeavesModule,
+            customer_cards_module_1.CustomerCardsModule,
+            visibility_reports_module_1.VisibilityReportsModule,
+            attendants_cash_hand_module_1.AttendantsCashHandModule,
+            managers_cash_approvals_module_1.ManagersCashApprovalsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

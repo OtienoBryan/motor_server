@@ -65,6 +65,8 @@ async function bootstrap() {
         'http://127.0.0.1:5173',
         'http://localhost:8080',
         'https://motorclient.vercel.app',
+        'https://motorgas.citlogisticssystems.com',
+        'https://www.motorgas.citlogisticssystems.com',
         'https://*.vercel.app', // Allow all Vercel preview deployments
       ];
       
